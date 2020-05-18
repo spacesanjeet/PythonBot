@@ -43,6 +43,8 @@ class Embed(commands.Cog):
     @commands.command(
         name='embed',
         description='The embed command',
+        aliases=['em'],
+        usage='<title> <description>'
     )
     async def embed_command(self, ctx):
 
@@ -112,12 +114,13 @@ class Embed(commands.Cog):
         color_list = [c for c in colors.values()]
         help_embed = discord.Embed(
             title='Help',
+            description=f'> **Use `@{self.bot.user.name}#{self.bot.user.discriminator} <categoryName>` to get help with all commands in that category!**',
             color=random.choice(color_list)
         )
         help_embed.set_thumbnail(url=self.bot.user.avatar_url)
         help_embed.set_footer(
-            text=f'Requested by {ctx.message.author.name}',
-            icon_url=self.bot.user.avatar_url
+            text=f'Requested by {ctx.message.author}',
+            icon_url=ctx.message.author.avatar_url
         )
 
         # Get a list of all cogs
@@ -132,7 +135,7 @@ class Embed(commands.Cog):
                 cog_commands = self.bot.get_cog(cog).get_commands()
                 commands_list = ''
                 for comm in cog_commands:
-                    commands_list += f'**{comm.name}** - *{comm.description}*\n'
+                    commands_list += f'> **{comm.name}** - *{comm.description}*\n'
 
                 # Add the cog's details to the embed.
 
@@ -140,11 +143,8 @@ class Embed(commands.Cog):
                     name=cog,
                     value=commands_list,
                     inline=False
-                ).add_field(
-                    name='\u200b', inline=False
                 )
 
-                # Also added a blank field '\u200b' is a whitespace character.
             pass
         else:
 
@@ -166,25 +166,25 @@ class Embed(commands.Cog):
                 #
                 # Format
                 for command in commands_list:
-                    help_text += f'```{command.name}```\n' \
-                        f'**{command.description}**\n\n'
+                    help_text += f'```{command.name}```' \
+                        f'**{command.description}**\n'
 
                     # Also add aliases, if there are any
                     if len(command.aliases) > 0:
-                        help_text += f'**Aliases :** `{"`, `".join(command.aliases)}`\n\n\n'
+                        help_text += f'**Aliases:** `{"`, `".join(command.aliases)}`\n'
                     else:
                         # Add a newline character to keep it pretty
                         # That IS the whole purpose of custom help
                         help_text += '\n'
 
                     # Finally the format
-                    help_text += f'Format: `@{self.bot.user.name}#{self.bot.user.discriminator}' \
-                        f' {command.name} {command.usage if command.usage is not None else ""}`\n\n\n\n'
+                    help_text += f'**Format:** `@{self.bot.user.name}#{self.bot.user.discriminator}' \
+                        f' {command.name} {command.usage if command.usage is not None else ""}`\n'
 
                 help_embed.description = help_text
             else:
                 # Notify the user of invalid cog and finish the command
-                await ctx.send('Invalid cog specified.\nUse `help` command to list all cogs.')
+                await ctx.send('Invalid category specified. Use `help` command to list all categories and commands!')
                 return
 
         await ctx.send(embed=help_embed)

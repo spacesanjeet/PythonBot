@@ -1,5 +1,5 @@
 import discord
-import urbandictionary as ud
+import urbandict as ud
 from discord.ext import commands
 
 class Utility(commands.Cog):
@@ -16,15 +16,11 @@ class Utility(commands.Cog):
     async def urban_command(self, ctx, *, word):
         embed= discord.Embed(title = word, description='Heres what I could find' , color =0xf5f5dc)
         definition = ud.define(word)
-        for d in definition:
-            embed.add_field(name='Definition' , value = d.definition , inline = True)
-            embed.add_field(name='Example' , value = d.example, inline = True)
-            embed.add_field(name= 'Upvotes 👍' , value = d.upvotes , inline = True)
-            embed.add_field(name='Downvotes 👎' , value = d.downvotes , inline = True)
-            embed.set_footer(text = 'Requested by {}'.format(ctx.message.author))
-            embed.set_thumbnail(url = 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSZp9CZhLovlcsXWhjiIPjTEwWG7HRmCEYT7NmYDXrGdYUOhfRWjHgbdiU9')
-            await ctx.send(embed=embed)
-            break
+        dict = definition[0]
+        embed.add_field(name='Definition', value = dict[def])
+        embed.add_field(name='Example', value = dict[example])
+        embed.add_field(name='Category', value= dict[category])
+        await ctx.send(embed=embed)
 
         return
 
