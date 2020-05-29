@@ -7,7 +7,7 @@ import replit
 
 def get_prefix(client, message):
 
-    prefixes = ['!', 't!', '==']    # sets the prefixes, u can keep it as an array of only 1 item if you need only one prefix
+    prefixes = ['!', 't!', '=']    # sets the prefixes, u can keep it as an array of only 1 item if you need only one prefix
 
     if not message.guild:
         prefixes = ['==']   # Only allow '==' as a prefix when in DMs
