@@ -1,6 +1,6 @@
 import discord
-import pypokedex
 from discord.ext import commands
+import requests
 
 class Utility(commands.Cog):
 
@@ -14,15 +14,20 @@ class Utility(commands.Cog):
         usage='<pokemonName>'
     )
     async def pokedex_command(self, ctx, pokemon):
-        p = pypokedex.get(name=pokemon)
         try:
-            pokemonName = p.name
-            embed = discord.Embed(title=f"**{pokemonName.capitalize()} [{p.dex}]**", color=0xf5f5dc)
-            embed.add_field(name="Basics", value=f"**Height: ** {p.height}\n**Weight: ** {p.weight}\n**Base Experience: ** {p.base_experience}\n**Type: ** {p.types}\n**Abilities: ** {p.abilities}", inline=False)
-            embed.add_field(name="Stats and Moves", value=f"**Hp: ** {p.base_stats[0]}\n**Attack: ** {p.base_stats[1]}\n**Defense: ** {p.base_stats[2]}\n**SpecialAtk: ** {p.base_stats[3]}\n**SpecialDef: ** {p.base_stats[4]}\n**Speed: ** {p.base_stats[5]}")
+            response = requests.get('https://some-random-api.ml/pokedex?pokemon='+ pokemon)
+            response.raise_for_status()
+            # access JSOn content
+            jsonResponse = response.json()
+            dict = jsonResponse.get('sprites')
+            embed =  discord.Embed(title=f"**{pokemon.capitalize()} [{jsonResponse.get('id')}]**", description=f"{jsonResponse.get('description')}", color=0xf5f5dc)
+            embed.set_thumbnail(url=dict.get('normal'))
+            embed.add_field(name="Basics", value=f"**Height: ** {jsonResponse.get('height')}\n**Weight: ** {jsonResponse.get('weight')}\n**Base Experience: ** {jsonResponse.get('base_experience')}\n**Type: ** {jsonResponse.get('type')}\n**Abilities: ** {jsonResponse.get('abilities')}", inline=False)
+            embed.add_field(name="Family", value=f"**Egg Group: ** {jsonResponse.get('egg_group')}\n**Family: ** {jsonResponse.get('family')}\n**Gender: ** {jsonResponse.get('gender')}\n**Generation: ** {jsonResponse.get('generation')}\n**Species: ** {jsonResponse.get('species')}", inline=False)
+            embed.add_field(name="Stats", value=f"{jsonResponse.get('stats')}")
             await ctx.send(embed=embed)
-        except Exception as e:
-            await ctx.send(e)
+        except Exception as err:
+            await ctx.send(err)
 
 def setup(bot):
     bot.add_cog(Utility(bot))
