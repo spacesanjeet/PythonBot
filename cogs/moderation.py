@@ -36,6 +36,23 @@ class Moderation(commands.Cog):
 
         return
 
+    @commands.command(
+        name='nickname',
+        description='Changes the nickname!',
+        aliases=['nick'],
+        usage='<user> <nick>'
+    )
+    @commands.has_permissions(manage_nicknames=True)
+    async def nickname_command(self, ctx, member: discord.Member, *, name: str = None):
+        name = name or None
+        try :
+            await member.edit(nick=name)
+            await ctx.send('Nickname changed!')
+        except Exception as error:
+            await self.bot.say(f"Unable to change nickname : **{error}**")
+
+        return
+
 def setup(bot):
     bot.add_cog(Moderation(bot))
     # Adds the Basic commands to the bot
