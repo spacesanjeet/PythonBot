@@ -32,7 +32,7 @@ class Moderation(commands.Cog):
             await ctx.message.guild.ban(member)
             await ctx.send(f"**{member.name}#{member.discriminator}** has been banned!")
         except Exception as error:
-            await self.bot.say(f"Unable to ban user : **{error}**")
+            await ctx.send(f"Unable to ban user : **{error}**")
 
         return
 
@@ -49,7 +49,41 @@ class Moderation(commands.Cog):
             await member.edit(nick=name)
             await ctx.send('Nickname changed!')
         except Exception as error:
-            await self.bot.say(f"Unable to change nickname : **{error}**")
+            await ctx.send(f"Unable to change nickname : **{error}**")
+
+        return
+
+    @commands.command(
+        name='addrole',
+        description='Adds role to a user!',
+        aliases=['adr'],
+        usage='<member> <roleName>'
+    )
+    @commands.has_permissions(manage_roles=True)
+    async def addrole_command(self, ctx, member: discord.Member = None, *, role = None):
+        try :
+            user =  ctx.message.author
+            await member.add_roles(discord.utils.get(user.guild.roles , name = role))
+            await ctx.send(f'Added roles to **{member.name}#{member.discriminator}**')
+        except Exception as error:
+            await ctx.send(f'Unable to add role : **{error}**')
+
+        return
+
+    @commands.command(
+        name='removerole',
+        description='Removes a role from a user!',
+        aliases=['rmr'],
+        usage='<member> <roleName>'
+    )
+    @commands.has_permissions(manage_roles=True)
+    async def removerole_command(self, ctx, member: discord.Member = None, *, role = None):
+        try :
+            user = ctx.message.author
+            await member.remove_roles(discord.utils.get(user.guild.roles , name = role))
+            await ctx.send(f'Removed roles from **{member.name}#{member.discriminator}**')
+        except Exception as error:
+            await ctx.send(f'Unable to remove role : **{error}**')
 
         return
 
